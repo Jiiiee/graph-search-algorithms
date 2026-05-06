@@ -128,6 +128,50 @@ def astar(
     return []
 
 
+def astar_with_cost(
+    graph: Graph,
+    start: Hashable,
+    goal: Hashable,
+    heuristic: Callable[[Hashable, Hashable], float],
+) -> tuple[list[Hashable], float]:
+    """Return the lowest-cost path and total cost from start to goal."""
+
+    graph._ensure_node_exists(start)
+    graph._ensure_node_exists(goal)
+
+    if start == goal:
+        return [start], 0
+
+    counter = 0
+    open_set = [(heuristic(start, goal), counter, start)]
+    came_from: dict[Hashable, Hashable] = {}
+    g_score = {start: 0.0}
+    closed = set()
+
+    while open_set:
+        _, _, current = heapq.heappop(open_set)
+        if current in closed:
+            continue
+
+        if current == goal:
+            return _reconstruct_path(came_from, current), g_score[current]
+
+        closed.add(current)
+
+        for neighbor in graph.neighbors(current):
+            tentative_g_score = g_score[current] + graph.edge_weight(current, neighbor)
+            if tentative_g_score >= g_score.get(neighbor, float("inf")):
+                continue
+
+            came_from[neighbor] = current
+            g_score[neighbor] = tentative_g_score
+            counter += 1
+            f_score = tentative_g_score + heuristic(neighbor, goal)
+            heapq.heappush(open_set, (f_score, counter, neighbor))
+
+    return [], float("inf")
+
+
 def _reconstruct_path(
     came_from: dict[Hashable, Hashable],
     current: Hashable,

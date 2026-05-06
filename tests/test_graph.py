@@ -1,7 +1,7 @@
 import pytest
 
 from main import euclidean_distance, manhattan_distance, zero_heuristic
-from src.graph import Graph, astar, bfs, dfs
+from src.graph import Graph, astar, astar_with_cost, bfs, dfs
 
 
 def build_sample_graph() -> Graph:
@@ -158,3 +158,44 @@ def test_astar_returns_same_optimal_path_with_zero_and_manhattan_heuristics() ->
 
     assert astar(graph, (0, 0), (2, 1), zero_heuristic) == expected_path
     assert astar(graph, (0, 0), (2, 1), manhattan_distance) == expected_path
+
+
+def test_astar_with_cost_returns_path_and_total_cost() -> None:
+    graph = Graph()
+    graph.add_edge("A", "B", 2)
+    graph.add_edge("B", "D", 3)
+    graph.add_edge("A", "D", 10)
+
+    assert astar_with_cost(graph, "A", "D", zero_heuristic) == (["A", "B", "D"], 5)
+
+
+def test_astar_with_cost_keeps_astar_path_only_behavior() -> None:
+    graph = Graph()
+    graph.add_edge("A", "B", 2)
+    graph.add_edge("B", "D", 3)
+    graph.add_edge("A", "D", 10)
+
+    assert astar(graph, "A", "D", zero_heuristic) == ["A", "B", "D"]
+
+
+def test_astar_with_cost_returns_zero_cost_when_start_is_goal() -> None:
+    graph = build_sample_graph()
+
+    assert astar_with_cost(graph, "A", "A", zero_heuristic) == (["A"], 0)
+
+
+def test_astar_with_cost_returns_infinite_cost_when_goal_is_unreachable() -> None:
+    graph = build_sample_graph()
+    graph.add_node("Z")
+
+    assert astar_with_cost(graph, "A", "Z", zero_heuristic) == ([], float("inf"))
+
+
+def test_astar_with_cost_raises_for_missing_start_or_goal_node() -> None:
+    graph = build_sample_graph()
+
+    with pytest.raises(ValueError, match="Start node does not exist"):
+        astar_with_cost(graph, "Z", "A", zero_heuristic)
+
+    with pytest.raises(ValueError, match="Start node does not exist"):
+        astar_with_cost(graph, "A", "Z", zero_heuristic)
