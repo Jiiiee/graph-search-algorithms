@@ -6,10 +6,11 @@ graph-search-algorithms
 
 ## 2. 当前阶段状态
 
-- 当前阶段：v0.2-astar 冻结状态
+- 当前阶段：v0.3-heuristics 冻结状态
 - 当前主分支：master
 - MVP v0.1 已完成
 - A* MVP 已完成
+- Heuristic 学习示例已完成
 - 当前工作区应为 clean
 
 ## 3. 已完成内容
@@ -34,6 +35,16 @@ graph-search-algorithms
 - 扩展 `main.py`，增加 A* 命令行演示
 - 更新 README，记录 weighted Graph 和 A* 的用法
 
+### v0.3-heuristics
+
+- 新增 `zero_heuristic` 示例函数，说明 A* 在零启发式下接近 Dijkstra 的搜索方式
+- 新增 `manhattan_distance` 示例函数，用于四方向网格坐标场景
+- 新增 `euclidean_distance` 示例函数，用于平面坐标直线距离估计场景
+- 扩展 `main.py`，增加坐标图 A* demo
+- 新增 heuristic pytest 测试，覆盖三种 heuristic 的数值结果和坐标图 A* 调用
+- 新增 `docs/HEURISTICS.md`，记录 heuristic 学习说明、适用场景和注意事项
+- 更新 README，补充 heuristic 使用方式和 demo 输出
+
 ## 4. 已验证命令
 
 ```bash
@@ -43,8 +54,8 @@ pytest
 
 验证结果：
 
-- `python3 main.py` 可以输出 BFS、DFS 和 A* 示例结果
-- `pytest` 通过全部 v0.2-astar 测试
+- `python3 main.py` 可以输出 BFS、DFS、A* 和坐标图 A* 示例结果
+- `pytest` 通过全部 v0.3-heuristics 测试
 
 ## 5. Git / GitHub 状态
 
@@ -57,13 +68,17 @@ pytest
 - tag 已创建：v0.2-astar
 - 本地 `astar-mvp` 分支已删除
 - 远程 `astar-mvp` 分支已删除
+- PR #3 已合并
+- tag 已创建：v0.3-heuristics
+- 本地 `heuristic-examples` 分支已删除
+- 远程 `heuristic-examples` 分支已删除
 - 当前工作区应为 clean
 
 ## 6. 当前冻结点
 
-v0.2-astar 冻结在 weighted Graph、BFS、DFS、A*、测试、命令行演示和 README 全部完成后的状态。
+v0.3-heuristics 冻结在 weighted Graph、BFS、DFS、A*、heuristic 学习示例、测试、命令行演示、README 和 `docs/HEURISTICS.md` 全部完成后的状态。
 
-该冻结点适合作为后续扩展图搜索算法、路径返回能力、图可视化、更多测试用例或项目结构完善的稳定起点。
+该冻结点适合作为后续扩展图搜索算法、路径返回能力、更多 heuristic 示例、图可视化、更多测试用例或项目结构完善的稳定起点。
 
 ## 7. 后续任务候选
 
@@ -71,25 +86,25 @@ v0.2-astar 冻结在 weighted Graph、BFS、DFS、A*、测试、命令行演示�
 - 为 BFS / DFS 增加路径返回能力
 - 为 A* 增加路径成本返回能力
 - 增加 Dijkstra 算法
-- 增加更多边界测试，例如重复边权重更新、非连通图、零权重边、空图
-- 添加更多边界测试，例如孤立节点、重复边、空图
+- 增加更多 heuristic 示例，例如 Chebyshev distance 或自定义业务成本估计
+- 增加更多边界测试，例如重复边权重更新、非连通图、零权重边、孤立节点、空图
 - 增加简单图可视化功能
 - 清理历史中已被 Git 跟踪的 `.DS_Store`
 
 ## 8. 下次恢复项目的建议起点
 
-建议下次从 v0.2-astar 冻结状态开始，先确认是否继续扩展算法能力、路径返回能力或图可视化能力，而不是直接修改代码。
+建议下次从 v0.3-heuristics 冻结状态开始，先确认是否继续扩展算法能力、路径返回能力、heuristic 示例或图可视化能力，而不是直接修改代码。
 
 推荐恢复顺序：
 
 1. 确认当前分支是 `master`
 2. 确认工作区 clean
-3. 查看 tag `v0.2-astar`
+3. 查看 tag `v0.3-heuristics`
 4. 阅读当前状态文档
 5. 选择下一阶段目标，并单独制定开发计划
 
 ## 9. 暂停说明
 
-项目已在 v0.2-astar 阶段暂停。
+项目已在 v0.3-heuristics 阶段暂停。
 
 暂停时不需要继续修改代码、不需要提交新的 commit、不需要推送远程分支。后续恢复时，应先基于当前冻结状态确认目标，再开启新的计划和实现步骤。
