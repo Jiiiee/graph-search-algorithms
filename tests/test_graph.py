@@ -1,5 +1,6 @@
 import pytest
 
+from main import euclidean_distance, manhattan_distance, zero_heuristic
 from src.graph import Graph, astar, bfs, dfs
 
 
@@ -97,3 +98,35 @@ def test_astar_raises_for_missing_start_or_goal_node() -> None:
 
     with pytest.raises(ValueError, match="Start node does not exist"):
         astar(graph, "A", "Z", lambda _node, _goal: 0)
+
+
+def test_zero_heuristic_always_returns_zero() -> None:
+    assert zero_heuristic("A", "B") == 0
+    assert zero_heuristic((0, 0), (2, 3)) == 0
+
+
+def test_manhattan_distance_returns_grid_distance() -> None:
+    assert manhattan_distance((0, 0), (2, 3)) == 5
+    assert manhattan_distance((2, 3), (0, 0)) == 5
+
+
+def test_euclidean_distance_returns_straight_line_distance() -> None:
+    assert euclidean_distance((0, 0), (3, 4)) == 5
+    assert euclidean_distance((3, 4), (0, 0)) == 5
+
+
+def test_astar_accepts_manhattan_distance_for_coordinate_nodes() -> None:
+    graph = Graph()
+    graph.add_edge((0, 0), (1, 0), 1)
+    graph.add_edge((1, 0), (2, 0), 1)
+    graph.add_edge((2, 0), (2, 1), 1)
+    graph.add_edge((0, 0), (0, 1), 1)
+    graph.add_edge((0, 1), (1, 1), 1)
+    graph.add_edge((1, 1), (2, 1), 1)
+
+    assert astar(graph, (0, 0), (2, 1), manhattan_distance) == [
+        (0, 0),
+        (1, 0),
+        (2, 0),
+        (2, 1),
+    ]
