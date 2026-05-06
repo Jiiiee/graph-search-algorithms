@@ -6,11 +6,12 @@ graph-search-algorithms
 
 ## 2. 当前阶段状态
 
-- 当前阶段：v0.3-heuristics 冻结状态
+- 当前阶段：v0.4-comparison 冻结状态
 - 当前主分支：master
 - MVP v0.1 已完成
 - A* MVP 已完成
 - Heuristic 学习示例已完成
+- BFS / DFS / A* 算法对比文档已完成
 - 当前工作区应为 clean
 
 ## 3. 已完成内容
@@ -45,6 +46,16 @@ graph-search-algorithms
 - 新增 `docs/HEURISTICS.md`，记录 heuristic 学习说明、适用场景和注意事项
 - 更新 README，补充 heuristic 使用方式和 demo 输出
 
+### v0.4-comparison
+
+- 新增 `docs/ALGORITHM_COMPARISON.md`，系统记录 BFS、DFS、A* 的算法对比
+- 补充 BFS / DFS / A* 的当前功能边界对比，明确遍历函数和路径搜索函数的区别
+- 补充三种算法的适用场景对比
+- 补充三种算法的主要优缺点说明
+- 补充当前 A* 优化评估，明确本阶段优先补文档和测试，不重构 `Graph` 或 `astar`
+- 更新 README，增加 algorithm comparison 文档入口
+- 新增 algorithm comparison tests，验证 BFS / DFS 遍历与 A* 路径搜索的差异，以及 zero heuristic 与 Manhattan heuristic 在简单坐标图上的一致最优路径
+
 ## 4. 已验证命令
 
 ```bash
@@ -55,7 +66,7 @@ pytest
 验证结果：
 
 - `python3 main.py` 可以输出 BFS、DFS、A* 和坐标图 A* 示例结果
-- `pytest` 通过全部 v0.3-heuristics 测试
+- `pytest` 通过全部 v0.4-comparison 测试
 
 ## 5. Git / GitHub 状态
 
@@ -72,19 +83,24 @@ pytest
 - tag 已创建：v0.3-heuristics
 - 本地 `heuristic-examples` 分支已删除
 - 远程 `heuristic-examples` 分支已删除
+- PR #4 已合并
+- tag 已创建：v0.4-comparison
+- 本地 `algorithm-comparison` 分支已删除
+- 远程 `algorithm-comparison` 分支已删除
 - 当前工作区应为 clean
 
 ## 6. 当前冻结点
 
-v0.3-heuristics 冻结在 weighted Graph、BFS、DFS、A*、heuristic 学习示例、测试、命令行演示、README 和 `docs/HEURISTICS.md` 全部完成后的状态。
+v0.4-comparison 冻结在 weighted Graph、BFS、DFS、A*、heuristic 学习示例、算法对比文档、测试、命令行演示、README、`docs/HEURISTICS.md` 和 `docs/ALGORITHM_COMPARISON.md` 全部完成后的状态。
 
-该冻结点适合作为后续扩展图搜索算法、路径返回能力、更多 heuristic 示例、图可视化、更多测试用例或项目结构完善的稳定起点。
+该冻结点适合作为后续扩展图搜索算法、路径返回能力、更多 heuristic 示例、A* 教学统计、图可视化、更多测试用例或项目结构完善的稳定起点。
 
 ## 7. 后续任务候选
 
 - 增加有向图支持
 - 为 BFS / DFS 增加路径返回能力
 - 为 A* 增加路径成本返回能力
+- 为 A* 增加访问节点数量或扩展顺序统计，用于教学对比
 - 增加 Dijkstra 算法
 - 增加更多 heuristic 示例，例如 Chebyshev distance 或自定义业务成本估计
 - 增加更多边界测试，例如重复边权重更新、非连通图、零权重边、孤立节点、空图
@@ -93,18 +109,18 @@ v0.3-heuristics 冻结在 weighted Graph、BFS、DFS、A*、heuristic 学习示�
 
 ## 8. 下次恢复项目的建议起点
 
-建议下次从 v0.3-heuristics 冻结状态开始，先确认是否继续扩展算法能力、路径返回能力、heuristic 示例或图可视化能力，而不是直接修改代码。
+建议下次从 v0.4-comparison 冻结状态开始，先确认是否继续扩展算法能力、路径返回能力、A* 教学统计、heuristic 示例或图可视化能力，而不是直接修改代码。
 
 推荐恢复顺序：
 
 1. 确认当前分支是 `master`
 2. 确认工作区 clean
-3. 查看 tag `v0.3-heuristics`
+3. 查看 tag `v0.4-comparison`
 4. 阅读当前状态文档
 5. 选择下一阶段目标，并单独制定开发计划
 
 ## 9. 暂停说明
 
-项目已在 v0.3-heuristics 阶段暂停。
+项目已在 v0.4-comparison 阶段暂停。
 
 暂停时不需要继续修改代码、不需要提交新的 commit、不需要推送远程分支。后续恢复时，应先基于当前冻结状态确认目标，再开启新的计划和实现步骤。
