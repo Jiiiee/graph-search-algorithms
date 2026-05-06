@@ -1,7 +1,7 @@
 import pytest
 
 from main import euclidean_distance, manhattan_distance, zero_heuristic
-from src.graph import Graph, astar, astar_with_cost, bfs, dfs
+from src.graph import Graph, astar, astar_with_cost, bfs, bfs_path, dfs, dfs_path
 
 
 def build_sample_graph() -> Graph:
@@ -50,6 +50,66 @@ def test_dfs_returns_depth_first_order() -> None:
     graph = build_sample_graph()
 
     assert dfs(graph, "A") == ["A", "B", "D", "C", "E"]
+
+
+def test_bfs_path_returns_shortest_path_by_edge_count() -> None:
+    graph = Graph()
+    graph.add_edge("A", "B")
+    graph.add_edge("A", "C")
+    graph.add_edge("B", "D")
+    graph.add_edge("C", "E")
+    graph.add_edge("E", "D")
+
+    assert bfs_path(graph, "A", "D") == ["A", "B", "D"]
+
+
+def test_dfs_path_returns_first_depth_first_path() -> None:
+    graph = Graph()
+    graph.add_edge("A", "B")
+    graph.add_edge("A", "C")
+    graph.add_edge("B", "D")
+    graph.add_edge("C", "E")
+    graph.add_edge("E", "D")
+
+    assert dfs_path(graph, "A", "D") == ["A", "B", "D"]
+
+
+def test_path_search_keeps_bfs_and_dfs_traversal_order_unchanged() -> None:
+    graph = build_sample_graph()
+
+    assert bfs(graph, "A") == ["A", "B", "C", "D", "E"]
+    assert dfs(graph, "A") == ["A", "B", "D", "C", "E"]
+
+
+def test_path_search_returns_start_when_start_is_goal() -> None:
+    graph = build_sample_graph()
+
+    assert bfs_path(graph, "A", "A") == ["A"]
+    assert dfs_path(graph, "A", "A") == ["A"]
+
+
+def test_path_search_returns_empty_path_when_goal_is_unreachable() -> None:
+    graph = build_sample_graph()
+    graph.add_node("Z")
+
+    assert bfs_path(graph, "A", "Z") == []
+    assert dfs_path(graph, "A", "Z") == []
+
+
+def test_path_search_raises_for_missing_start_or_goal_node() -> None:
+    graph = build_sample_graph()
+
+    with pytest.raises(ValueError, match="Start node does not exist"):
+        bfs_path(graph, "Z", "A")
+
+    with pytest.raises(ValueError, match="Start node does not exist"):
+        bfs_path(graph, "A", "Z")
+
+    with pytest.raises(ValueError, match="Start node does not exist"):
+        dfs_path(graph, "Z", "A")
+
+    with pytest.raises(ValueError, match="Start node does not exist"):
+        dfs_path(graph, "A", "Z")
 
 
 def test_search_raises_for_missing_start_node() -> None:

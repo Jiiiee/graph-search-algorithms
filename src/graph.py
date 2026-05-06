@@ -60,6 +60,35 @@ def bfs(graph: Graph, start: Hashable) -> list[Hashable]:
     return order
 
 
+def bfs_path(graph: Graph, start: Hashable, goal: Hashable) -> list[Hashable]:
+    """Return the shortest path by edge count from start to goal."""
+
+    graph._ensure_node_exists(start)
+    graph._ensure_node_exists(goal)
+
+    if start == goal:
+        return [start]
+
+    visited = {start}
+    queue = deque([(start, [start])])
+
+    while queue:
+        node, path = queue.popleft()
+
+        for neighbor in graph.neighbors(node):
+            if neighbor in visited:
+                continue
+
+            next_path = [*path, neighbor]
+            if neighbor == goal:
+                return next_path
+
+            visited.add(neighbor)
+            queue.append((neighbor, next_path))
+
+    return []
+
+
 def dfs(graph: Graph, start: Hashable) -> list[Hashable]:
     """Return nodes in depth-first traversal order."""
 
@@ -82,6 +111,34 @@ def dfs(graph: Graph, start: Hashable) -> list[Hashable]:
                 stack.append(neighbor)
 
     return order
+
+
+def dfs_path(graph: Graph, start: Hashable, goal: Hashable) -> list[Hashable]:
+    """Return the first depth-first path from start to goal."""
+
+    graph._ensure_node_exists(start)
+    graph._ensure_node_exists(goal)
+
+    if start == goal:
+        return [start]
+
+    visited = set()
+    stack = [(start, [start])]
+
+    while stack:
+        node, path = stack.pop()
+        if node in visited:
+            continue
+
+        visited.add(node)
+        if node == goal:
+            return path
+
+        for neighbor in reversed(graph.neighbors(node)):
+            if neighbor not in visited:
+                stack.append((neighbor, [*path, neighbor]))
+
+    return []
 
 
 def astar(

@@ -8,14 +8,26 @@ structures and search algorithms through an incremental Codex APP workflow.
 - Minimal undirected weighted `Graph` data structure
 - Breadth-first search (`bfs`)
 - Depth-first search (`dfs`)
+- BFS path search (`bfs_path`)
+- DFS path search (`dfs_path`)
 - A* search (`astar`)
 - A* search with path cost (`astar_with_cost`)
 - Focused tests for graph behavior and traversal order
 
 The implementation intentionally keeps the API small and readable. Edges are
-undirected, default to weight `1`, and reject negative weights. A* can return
-either a path list or a `(path, cost)` pair, and uses a caller-provided
-heuristic function.
+undirected, default to weight `1`, and reject negative weights. BFS and DFS can
+return traversal order or a path to a goal. A* can return either a path list or
+a `(path, cost)` pair, and uses a caller-provided heuristic function.
+
+## Path search
+
+`bfs(graph, start)` and `dfs(graph, start)` return traversal order. Use
+`bfs_path(graph, start, goal)` or `dfs_path(graph, start, goal)` when you need a
+path from `start` to `goal`.
+
+- `bfs_path` returns a shortest path by edge count.
+- `dfs_path` returns the first path found using the current DFS neighbor order.
+- Both return `[start]` when `start == goal`, and `[]` when no path exists.
 
 ## Heuristics
 
