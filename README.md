@@ -9,11 +9,13 @@ structures and search algorithms through an incremental Codex APP workflow.
 - Breadth-first search (`bfs`)
 - Depth-first search (`dfs`)
 - A* search (`astar`)
+- A* search with path cost (`astar_with_cost`)
 - Focused tests for graph behavior and traversal order
 
 The implementation intentionally keeps the API small and readable. Edges are
-undirected, default to weight `1`, and reject negative weights. A* returns the
-path as a list of nodes and uses a caller-provided heuristic function.
+undirected, default to weight `1`, and reject negative weights. A* can return
+either a path list or a `(path, cost)` pair, and uses a caller-provided
+heuristic function.
 
 ## Heuristics
 
@@ -34,22 +36,28 @@ See `docs/ALGORITHM_COMPARISON.md` for a comparison of BFS, DFS, and A*.
 ## A* example
 
 ```python
-from src.graph import Graph, astar
+from src.graph import Graph, astar, astar_with_cost
 
 graph = Graph()
-graph.add_edge("A", "B", 1)
-graph.add_edge("B", "D", 1)
-graph.add_edge("A", "D", 5)
+graph.add_edge("A", "B", 2)
+graph.add_edge("B", "D", 3)
+graph.add_edge("A", "D", 10)
 
 path = astar(graph, "A", "D", lambda node, goal: 0)
+path_with_cost = astar_with_cost(graph, "A", "D", lambda node, goal: 0)
+
 print(path)
+print(path_with_cost)
 ```
 
 Expected output:
 
 ```text
 ['A', 'B', 'D']
+(['A', 'B', 'D'], 5)
 ```
+
+When no path exists, `astar_with_cost` returns `([], float("inf"))`.
 
 ## Run the demo
 
