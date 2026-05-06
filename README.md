@@ -5,14 +5,35 @@ structures and search algorithms through an incremental Codex APP workflow.
 
 ## Current MVP
 
-- Minimal undirected `Graph` data structure
+- Minimal undirected weighted `Graph` data structure
 - Breadth-first search (`bfs`)
 - Depth-first search (`dfs`)
+- A* search (`astar`)
 - Focused tests for graph behavior and traversal order
 
-The first version intentionally keeps the implementation small and readable.
-A* search is planned as a later extension after the graph and basic traversal
-foundation is easy to review.
+The implementation intentionally keeps the API small and readable. Edges are
+undirected, default to weight `1`, and reject negative weights. A* returns the
+path as a list of nodes and uses a caller-provided heuristic function.
+
+## A* example
+
+```python
+from src.graph import Graph, astar
+
+graph = Graph()
+graph.add_edge("A", "B", 1)
+graph.add_edge("B", "D", 1)
+graph.add_edge("A", "D", 5)
+
+path = astar(graph, "A", "D", lambda node, goal: 0)
+print(path)
+```
+
+Expected output:
+
+```text
+['A', 'B', 'D']
+```
 
 ## Run the demo
 
@@ -27,6 +48,7 @@ Expected output:
 ```text
 BFS from A: ['A', 'B', 'C', 'D', 'E']
 DFS from A: ['A', 'B', 'D', 'C', 'E']
+A* from A to D: ['A', 'B', 'D']
 ```
 
 ## Run tests
