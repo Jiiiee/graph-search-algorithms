@@ -1,23 +1,25 @@
+import heapq
 from collections import deque
-from collections.abc import Hashable
+from collections.abc import Callable, Hashable
 
 
 class Graph:
-    """A minimal undirected graph backed by an adjacency list."""
+    """A minimal undirected weighted graph backed by an adjacency list."""
 
     def __init__(self) -> None:
-        self._adjacency: dict[Hashable, list[Hashable]] = {}
+        self._adjacency: dict[Hashable, dict[Hashable, float]] = {}
 
     def add_node(self, node: Hashable) -> None:
-        self._adjacency.setdefault(node, [])
+        self._adjacency.setdefault(node, {})
 
-    def add_edge(self, first: Hashable, second: Hashable) -> None:
+    def add_edge(self, first: Hashable, second: Hashable, weight: float = 1) -> None:
+        if weight < 0:
+            raise ValueError("Edge weight must be non-negative")
+
         self.add_node(first)
         self.add_node(second)
-        if second not in self._adjacency[first]:
-            self._adjacency[first].append(second)
-        if first not in self._adjacency[second]:
-            self._adjacency[second].append(first)
+        self._adjacency[first][second] = weight
+        self._adjacency[second][first] = weight
 
     def nodes(self) -> list[Hashable]:
         return list(self._adjacency)
@@ -25,6 +27,12 @@ class Graph:
     def neighbors(self, node: Hashable) -> list[Hashable]:
         self._ensure_node_exists(node)
         return list(self._adjacency[node])
+
+    def edge_weight(self, first: Hashable, second: Hashable) -> float:
+        self._ensure_node_exists(first)
+        if second not in self._adjacency[first]:
+            raise ValueError(f"Edge does not exist: {first!r} -> {second!r}")
+        return self._adjacency[first][second]
 
     def _ensure_node_exists(self, node: Hashable) -> None:
         if node not in self._adjacency:
@@ -74,3 +82,59 @@ def dfs(graph: Graph, start: Hashable) -> list[Hashable]:
                 stack.append(neighbor)
 
     return order
+
+
+def astar(
+    graph: Graph,
+    start: Hashable,
+    goal: Hashable,
+    heuristic: Callable[[Hashable, Hashable], float],
+) -> list[Hashable]:
+    """Return the lowest-cost path from start to goal using A* search."""
+
+    graph._ensure_node_exists(start)
+    graph._ensure_node_exists(goal)
+
+    if start == goal:
+        return [start]
+
+    counter = 0
+    open_set = [(heuristic(start, goal), counter, start)]
+    came_from: dict[Hashable, Hashable] = {}
+    g_score = {start: 0.0}
+    closed = set()
+
+    while open_set:
+        _, _, current = heapq.heappop(open_set)
+        if current in closed:
+            continue
+
+        if current == goal:
+            return _reconstruct_path(came_from, current)
+
+        closed.add(current)
+
+        for neighbor in graph.neighbors(current):
+            tentative_g_score = g_score[current] + graph.edge_weight(current, neighbor)
+            if tentative_g_score >= g_score.get(neighbor, float("inf")):
+                continue
+
+            came_from[neighbor] = current
+            g_score[neighbor] = tentative_g_score
+            counter += 1
+            f_score = tentative_g_score + heuristic(neighbor, goal)
+            heapq.heappush(open_set, (f_score, counter, neighbor))
+
+    return []
+
+
+def _reconstruct_path(
+    came_from: dict[Hashable, Hashable],
+    current: Hashable,
+) -> list[Hashable]:
+    path = [current]
+    while current in came_from:
+        current = came_from[current]
+        path.append(current)
+    path.reverse()
+    return path
