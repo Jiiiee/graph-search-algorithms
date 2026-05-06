@@ -29,6 +29,8 @@ to estimate the remaining cost from each node to the goal.
 
 See `docs/HEURISTICS.md` for a short learning guide.
 
+See `docs/ALGORITHM_COMPARISON.md` for a comparison of BFS, DFS, and A*.
+
 ## A* example
 
 ```python
@@ -81,6 +83,7 @@ pytest
 ├── main.py
 ├── pyproject.toml
 ├── docs/
+│   ├── ALGORITHM_COMPARISON.md
 │   └── HEURISTICS.md
 ├── src/
 │   ├── __init__.py

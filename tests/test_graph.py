@@ -77,6 +77,19 @@ def test_astar_prefers_lower_total_weight_over_fewer_edges() -> None:
     assert astar(graph, "A", "D", lambda _node, _goal: 0) == ["A", "B", "D"]
 
 
+def test_astar_path_search_differs_from_bfs_and_dfs_traversal_order() -> None:
+    graph = Graph()
+    graph.add_edge("A", "B", 1)
+    graph.add_edge("A", "C", 1)
+    graph.add_edge("B", "D", 1)
+    graph.add_edge("C", "E", 1)
+    graph.add_edge("A", "D", 5)
+
+    assert bfs(graph, "A") == ["A", "B", "C", "D", "E"]
+    assert dfs(graph, "A") == ["A", "B", "D", "C", "E"]
+    assert astar(graph, "A", "D", zero_heuristic) == ["A", "B", "D"]
+
+
 def test_astar_returns_start_when_start_is_goal() -> None:
     graph = build_sample_graph()
 
@@ -130,3 +143,18 @@ def test_astar_accepts_manhattan_distance_for_coordinate_nodes() -> None:
         (2, 0),
         (2, 1),
     ]
+
+
+def test_astar_returns_same_optimal_path_with_zero_and_manhattan_heuristics() -> None:
+    graph = Graph()
+    graph.add_edge((0, 0), (1, 0), 1)
+    graph.add_edge((1, 0), (2, 0), 1)
+    graph.add_edge((2, 0), (2, 1), 1)
+    graph.add_edge((0, 0), (0, 1), 1)
+    graph.add_edge((0, 1), (1, 1), 1)
+    graph.add_edge((1, 1), (2, 1), 1)
+
+    expected_path = [(0, 0), (1, 0), (2, 0), (2, 1)]
+
+    assert astar(graph, (0, 0), (2, 1), zero_heuristic) == expected_path
+    assert astar(graph, (0, 0), (2, 1), manhattan_distance) == expected_path
