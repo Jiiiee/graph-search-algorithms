@@ -6,13 +6,14 @@ graph-search-algorithms
 
 ## 2. 当前阶段状态
 
-- 当前阶段：v0.5-path-cost 冻结状态
+- 当前阶段：v0.6-path-variants 冻结状态
 - 当前主分支：master
 - MVP v0.1 已完成
 - A* MVP 已完成
 - Heuristic 学习示例已完成
 - BFS / DFS / A* 算法对比文档已完成
 - A* path cost support 已完成
+- BFS / DFS path search variants 已完成
 - 当前工作区应为 clean
 
 ## 3. 已完成内容
@@ -68,6 +69,19 @@ graph-search-algorithms
 - 更新 README，说明 `astar()` 返回 path only，`astar_with_cost()` 返回 path + cost
 - 更新 `docs/ALGORITHM_COMPARISON.md`，记录 A* 路径成本能力和后续优化方向
 
+### v0.6-path-variants
+
+- 新增 `bfs_path(graph, start, goal)`，在不改变 `bfs()` 遍历行为的前提下返回从起点到目标的路径
+- 新增 `dfs_path(graph, start, goal)`，在不改变 `dfs()` 遍历行为的前提下返回从起点到目标的路径
+- `bfs_path` 返回最少边数路径，不考虑边权重
+- `dfs_path` 返回按当前 DFS 邻居顺序找到的第一条深度优先路径，不考虑边权重
+- 支持无路径时返回 `[]`
+- 支持 `start == goal` 时返回 `[start]`
+- 保持起点或终点不存在时抛出 `ValueError`
+- 新增相关 pytest 测试，覆盖 BFS 最少边数路径、DFS 第一条深度优先路径、旧 `bfs()` / `dfs()` 兼容性、起终点相同、无路径和缺失节点场景
+- 更新 README，说明 traversal API 和 path search variants 的区别
+- 更新 `docs/ALGORITHM_COMPARISON.md`，记录 BFS / DFS path variants 的功能边界、适用场景和限制
+
 ## 4. 已验证命令
 
 ```bash
@@ -78,7 +92,7 @@ pytest
 验证结果：
 
 - `python3 main.py` 可以输出 BFS、DFS、A* 和坐标图 A* 示例结果
-- `pytest` 通过全部 v0.5-path-cost 测试，当前结果为 22 passed
+- `pytest` 通过全部 v0.6-path-variants 测试，当前结果为 28 passed
 
 ## 5. Git / GitHub 状态
 
@@ -103,18 +117,21 @@ pytest
 - tag 已创建：v0.5-path-cost
 - 本地 `astar-path-cost` 分支已删除
 - 远程 `astar-path-cost` 分支已删除
+- PR #6 已合并
+- tag 已创建：v0.6-path-variants
+- 本地 `path-search-variants` 分支已删除
+- 远程 `path-search-variants` 分支已删除
 - 当前工作区应为 clean
 
 ## 6. 当前冻结点
 
-v0.5-path-cost 冻结在 weighted Graph、BFS、DFS、A*、A* path cost support、heuristic 学习示例、算法对比文档、测试、命令行演示、README、`docs/HEURISTICS.md` 和 `docs/ALGORITHM_COMPARISON.md` 全部完成后的状态。
+v0.6-path-variants 冻结在 weighted Graph、BFS、DFS、BFS / DFS path search variants、A*、A* path cost support、heuristic 学习示例、算法对比文档、测试、命令行演示、README、`docs/HEURISTICS.md` 和 `docs/ALGORITHM_COMPARISON.md` 全部完成后的状态。
 
-该冻结点适合作为后续扩展图搜索算法、BFS / DFS 路径返回能力、更多 heuristic 示例、A* 教学统计、图可视化、更多测试用例或项目结构完善的稳定起点。
+该冻结点适合作为后续扩展图搜索算法、有向图能力、更多 heuristic 示例、A* 教学统计、图可视化、更多测试用例或项目结构完善的稳定起点。
 
 ## 7. 后续任务候选
 
 - 增加有向图支持
-- 为 BFS / DFS 增加路径返回能力
 - 为 A* 增加访问节点数量或扩展顺序统计，用于教学对比
 - 增加 Dijkstra 算法
 - 增加更多 heuristic 示例，例如 Chebyshev distance 或自定义业务成本估计
@@ -124,18 +141,18 @@ v0.5-path-cost 冻结在 weighted Graph、BFS、DFS、A*、A* path cost support�
 
 ## 8. 下次恢复项目的建议起点
 
-建议下次从 v0.5-path-cost 冻结状态开始，先确认是否继续扩展算法能力、BFS / DFS 路径返回能力、A* 教学统计、heuristic 示例或图可视化能力，而不是直接修改代码。
+建议下次从 v0.6-path-variants 冻结状态开始，先确认是否继续扩展算法能力、有向图能力、A* 教学统计、heuristic 示例或图可视化能力，而不是直接修改代码。
 
 推荐恢复顺序：
 
 1. 确认当前分支是 `master`
 2. 确认工作区 clean
-3. 查看 tag `v0.5-path-cost`
+3. 查看 tag `v0.6-path-variants`
 4. 阅读当前状态文档
 5. 选择下一阶段目标，并单独制定开发计划
 
 ## 9. 暂停说明
 
-项目已在 v0.5-path-cost 阶段暂停。
+项目已在 v0.6-path-variants 阶段暂停。
 
 暂停时不需要继续修改代码、不需要提交新的 commit、不需要推送远程分支。后续恢复时，应先基于当前冻结状态确认目标，再开启新的计划和实现步骤。
