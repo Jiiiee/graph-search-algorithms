@@ -143,8 +143,10 @@ pytest
 ├── pyproject.toml
 ├── docs/
 │   ├── ALGORITHM_COMPARISON.md
+│   ├── DIJKSTRA.md
 │   ├── GRAPH_DATA_FORMAT.md
 │   ├── HEURISTICS.md
+│   ├── V1_FREEZE_REPORT.md
 │   └── VERIFICATION_ORACLE.md
 ├── examples/
 │   └── graph_data/

@@ -1,6 +1,6 @@
 [project]
 name = "graph-search-algorithms"
-version = "0.8.0"
+version = "1.0.0"
 requires-python = ">=3.9"
 
 [project.optional-dependencies]
