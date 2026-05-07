@@ -6,7 +6,7 @@ graph-search-algorithms
 
 ## 2. 当前阶段状态
 
-- 当前阶段：v0.7-json-graph-data-layer 冻结状态
+- 当前阶段：v0.8-verification-oracle 冻结状态
 - 当前主分支：master
 - MVP v0.1 已完成
 - A* MVP 已完成
@@ -15,6 +15,7 @@ graph-search-algorithms
 - A* path cost support 已完成
 - BFS / DFS path search variants 已完成
 - JSON graph data layer 已完成
+- NetworkX verification oracle 已完成
 - 当前工作区应为 clean
 
 ## 3. 已完成内容
@@ -103,6 +104,22 @@ graph-search-algorithms
 - 未新增图数据库、CLI、可视化或第三方依赖
 - 保持 Python 3.9 兼容 typing 写法
 
+### v0.8-verification-oracle
+
+- 新增 `tests/test_against_networkx.py`，建立最小 NetworkX test-time oracle 复验层
+- 新增 `docs/VERIFICATION_ORACLE.md`，记录 oracle 目的、边界、复验规则和后续候选工具
+- 在 `pyproject.toml` 中新增 test optional dependencies，将 `pytest` 和 `networkx` 放入测试依赖
+- 更新 README，增加 verification oracle 文档入口和项目结构入口
+- 在测试中新增 `Graph` -> `networkx.Graph` 转换 helper，复制节点和无向带权边
+- 使用 NetworkX `shortest_path_length(..., weight="weight")` 复验 `astar_with_cost()` 的最低总成本
+- 使用 NetworkX 无权 `shortest_path_length(...)` 复验 `bfs_path()` 的最少边数
+- 复验无路径场景，确认项目函数返回当前约定结果，同时 NetworkX 抛出 `NetworkXNoPath`
+- 复验 `examples/graph_data/*.json` 的适用路径查询结果
+- 对多条等价最短路径不强制完整 path 一致，优先验证路径合法性、成本一致和边数最短
+- 保持 `src/graph.py`、`Graph`、BFS、DFS、A*、`astar_with_cost`、`bfs_path` 和 `dfs_path` 的现有行为不变
+- NetworkX 仅作为测试期 oracle 使用，不进入 `src` 运行时逻辑
+- 未新增 CLI、可视化、benchmark、性能测试系统、图数据库、Hypothesis 或 hypothesis-networkx
+
 ## 4. 已验证命令
 
 ```bash
@@ -113,6 +130,9 @@ pytest -q
 python3 -m json.tool examples/graph_data/warehouse_route.json >/dev/null
 python3 -m json.tool examples/graph_data/learning_path.json >/dev/null
 python3 -m json.tool examples/graph_data/file_dependency.json >/dev/null
+conda run -n graph-env python -m pytest tests/test_against_networkx.py -q
+conda run -n graph-env python -m pytest -q
+git diff master...v0.8-verification-oracle -- src/graph.py
 ```
 
 验证结果：
@@ -122,6 +142,9 @@ python3 -m json.tool examples/graph_data/file_dependency.json >/dev/null
 - `python3 -m py_compile src/graph_io.py` 通过
 - `pytest -q` 通过全部 v0.7-json-graph-data-layer 测试，当前结果为 42 passed
 - 3 个 `examples/graph_data/*.json` 文件均通过 `python3 -m json.tool` 格式检查
+- `conda run -n graph-env python -m pytest tests/test_against_networkx.py -q` 通过全部 oracle 测试，结果为 6 passed
+- `conda run -n graph-env python -m pytest -q` 通过全部测试，当前结果为 48 passed
+- `git diff master...v0.8-verification-oracle -- src/graph.py` 无输出，确认 v0.8 未修改 `src/graph.py`
 
 ## 5. Git / GitHub 状态
 
@@ -154,13 +177,17 @@ python3 -m json.tool examples/graph_data/file_dependency.json >/dev/null
 - tag 已创建：v0.7-json-graph-data-layer
 - 本地 `v0.7-json-graph-data-layer` 分支已删除
 - 远程 `v0.7-json-graph-data-layer` 分支已删除
+- PR #9 已合并
+- tag 已创建：v0.8-verification-oracle
+- 本地 `v0.8-verification-oracle` 分支已删除
+- 远程 `v0.8-verification-oracle` 分支已删除
 - 当前工作区应为 clean
 
 ## 6. 当前冻结点
 
-v0.7-json-graph-data-layer 冻结在 weighted Graph、BFS、DFS、BFS / DFS path search variants、A*、A* path cost support、heuristic 学习示例、算法对比文档、JSON graph data layer、测试、命令行演示、README、`docs/HEURISTICS.md`、`docs/ALGORITHM_COMPARISON.md` 和 `docs/GRAPH_DATA_FORMAT.md` 全部完成后的状态。
+v0.8-verification-oracle 冻结在 weighted Graph、BFS、DFS、BFS / DFS path search variants、A*、A* path cost support、heuristic 学习示例、算法对比文档、JSON graph data layer、NetworkX test-time verification oracle、测试、命令行演示、README、`docs/HEURISTICS.md`、`docs/ALGORITHM_COMPARISON.md`、`docs/GRAPH_DATA_FORMAT.md` 和 `docs/VERIFICATION_ORACLE.md` 全部完成后的状态。
 
-该冻结点适合作为后续扩展图搜索算法、有向图能力、更多 JSON 数据格式能力、更多 heuristic 示例、A* 教学统计、图可视化、更多测试用例或项目结构完善的稳定起点。
+该冻结点适合作为后续扩展图搜索算法、有向图能力、更多 JSON 数据格式能力、更多 heuristic 示例、A* 教学统计、更多 oracle 覆盖、属性测试候选或项目结构完善的稳定起点。
 
 ## 7. 后续任务候选
 
@@ -172,24 +199,27 @@ v0.7-json-graph-data-layer 冻结在 weighted Graph、BFS、DFS、BFS / DFS path
 - 增加 Dijkstra 算法
 - 增加更多 heuristic 示例，例如 Chebyshev distance 或自定义业务成本估计
 - 增加更多边界测试，例如重复边权重更新、非连通图、零权重边、孤立节点、空图
+- 扩展 NetworkX oracle 覆盖更多图形和边界场景
+- 后续再评估 Hypothesis / hypothesis-networkx 作为生成式图测试工具
 - 增加简单图可视化功能
 - 清理历史中已被 Git 跟踪的 `.DS_Store`
 
 ## 8. 下次恢复项目的建议起点
 
-建议下次从 v0.7-json-graph-data-layer 冻结状态开始，先确认是否继续扩展算法能力、JSON 数据格式能力、有向图能力、A* 教学统计、heuristic 示例或图可视化能力，而不是直接修改代码。
+建议下次从 v0.8-verification-oracle 冻结状态开始，先确认是否继续扩展算法能力、JSON 数据格式能力、有向图能力、A* 教学统计、heuristic 示例、oracle 覆盖或属性测试能力，而不是直接修改代码。
 
 推荐恢复顺序：
 
 1. 确认当前分支是 `master`
 2. 确认工作区 clean
-3. 查看 tag `v0.7-json-graph-data-layer`
+3. 查看 tag `v0.8-verification-oracle`
 4. 阅读当前状态文档
 5. 阅读 `docs/GRAPH_DATA_FORMAT.md`，确认 JSON v0.1 的当前边界
-6. 选择下一阶段目标，并单独制定开发计划
+6. 阅读 `docs/VERIFICATION_ORACLE.md`，确认 test-time oracle 的当前边界
+7. 选择下一阶段目标，并单独制定开发计划
 
 ## 9. 暂停说明
 
-项目已在 v0.7-json-graph-data-layer 阶段暂停。
+项目已在 v0.8-verification-oracle 阶段暂停。
 
 暂停时不需要继续修改代码、不需要提交新的 commit、不需要推送远程分支。后续恢复时，应先基于当前冻结状态确认目标，再开启新的计划和实现步骤。
