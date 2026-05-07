@@ -16,6 +16,8 @@ remains the source code being tested.
 - NetworkX is used only by tests.
 - The existing `Graph`, BFS, DFS, `bfs_path`, `dfs_path`, A*, and
   `astar_with_cost` return values are unchanged.
+- Dijkstra is verified as an additional test target through
+  `dijkstra_with_cost`.
 - The oracle layer does not add a CLI, visualization, benchmark, performance
   test system, or graph database integration.
 - DFS path order is not treated as a NetworkX-compatible contract because this
@@ -29,6 +31,13 @@ nodes and undirected weighted edges.
 For `astar_with_cost`, tests use a zero heuristic and compare the returned cost
 with `networkx.shortest_path_length(..., weight="weight")`. The returned path is
 also checked for valid endpoints and valid adjacent edges.
+
+For `dijkstra_with_cost`, tests compare the returned cost with
+`networkx.shortest_path_length(..., weight="weight")`. Tests also ask NetworkX
+for a weighted shortest path, but they do not require the project's returned
+path to be identical because multiple equal-cost shortest paths may exist.
+Instead, the project path is checked for valid endpoints, valid adjacent edges,
+and matching total cost.
 
 For `bfs_path`, tests compare the returned path length in edges with
 `networkx.shortest_path_length(...)` without weights. This avoids overfitting to
