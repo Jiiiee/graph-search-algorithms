@@ -1,3 +1,14 @@
+[project]
+name = "graph-search-algorithms"
+version = "0.8.0"
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+test = [
+    "networkx>=3.2,<4",
+    "pytest",
+]
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]

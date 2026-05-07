@@ -47,6 +47,9 @@ See `docs/ALGORITHM_COMPARISON.md` for a comparison of BFS, DFS, and A*.
 
 See `docs/GRAPH_DATA_FORMAT.md` for the JSON graph data format and examples.
 
+See `docs/VERIFICATION_ORACLE.md` for the test-only NetworkX verification
+oracle.
+
 ## A* example
 
 ```python
@@ -107,7 +110,8 @@ pytest
 ├── docs/
 │   ├── ALGORITHM_COMPARISON.md
 │   ├── GRAPH_DATA_FORMAT.md
-│   └── HEURISTICS.md
+│   ├── HEURISTICS.md
+│   └── VERIFICATION_ORACLE.md
 ├── examples/
 │   └── graph_data/
 ├── src/
@@ -115,6 +119,7 @@ pytest
 │   ├── graph_io.py
 │   └── graph.py
 └── tests/
+    ├── test_against_networkx.py
     ├── test_graph_io.py
     └── test_graph.py
 ```
