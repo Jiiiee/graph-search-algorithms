@@ -1,0 +1,36 @@
+{
+  "metadata": {
+    "format_version": "0.1",
+    "name": "learning_path",
+    "description": "Small prerequisite graph for a graph search learning path",
+    "directed": false
+  },
+  "nodes": [
+    {"id": "Python Basics"},
+    {"id": "Data Structures"},
+    {"id": "Queues"},
+    {"id": "Graphs"},
+    {"id": "BFS"},
+    {"id": "A Star"}
+  ],
+  "edges": [
+    {"source": "Python Basics", "target": "Data Structures"},
+    {"source": "Data Structures", "target": "Queues"},
+    {"source": "Data Structures", "target": "Graphs"},
+    {"source": "Queues", "target": "BFS"},
+    {"source": "Graphs", "target": "BFS"},
+    {"source": "Graphs", "target": "A Star", "weight": 2}
+  ],
+  "query": {
+    "start": "Python Basics",
+    "goal": "A Star",
+    "algorithm": "bfs_path"
+  },
+  "constraints": {
+    "allow_negative_weights": false
+  },
+  "expected_result": {
+    "path": ["Python Basics", "Data Structures", "Graphs", "A Star"],
+    "cost": 4
+  }
+}

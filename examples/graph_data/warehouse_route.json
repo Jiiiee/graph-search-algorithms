@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "format_version": "0.1",
+    "name": "warehouse_route",
+    "description": "Small weighted route graph for warehouse navigation",
+    "directed": false
+  },
+  "nodes": [
+    {"id": "Entrance"},
+    {"id": "Aisle-1"},
+    {"id": "Aisle-2"},
+    {"id": "Packing"},
+    {"id": "Exit"}
+  ],
+  "edges": [
+    {"source": "Entrance", "target": "Aisle-1", "weight": 2},
+    {"source": "Entrance", "target": "Aisle-2", "weight": 5},
+    {"source": "Aisle-1", "target": "Packing", "weight": 3},
+    {"source": "Aisle-2", "target": "Packing", "weight": 1},
+    {"source": "Packing", "target": "Exit", "weight": 2}
+  ],
+  "query": {
+    "start": "Entrance",
+    "goal": "Exit",
+    "algorithm": "astar",
+    "heuristic": "zero"
+  },
+  "constraints": {
+    "allow_negative_weights": false
+  },
+  "expected_result": {
+    "path": ["Entrance", "Aisle-1", "Packing", "Exit"],
+    "cost": 7
+  }
+}
