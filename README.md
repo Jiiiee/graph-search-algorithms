@@ -45,6 +45,8 @@ See `docs/HEURISTICS.md` for a short learning guide.
 
 See `docs/ALGORITHM_COMPARISON.md` for a comparison of BFS, DFS, and A*.
 
+See `docs/GRAPH_DATA_FORMAT.md` for the JSON graph data format and examples.
+
 ## A* example
 
 ```python
@@ -104,10 +106,15 @@ pytest
 ├── pyproject.toml
 ├── docs/
 │   ├── ALGORITHM_COMPARISON.md
+│   ├── GRAPH_DATA_FORMAT.md
 │   └── HEURISTICS.md
+├── examples/
+│   └── graph_data/
 ├── src/
 │   ├── __init__.py
+│   ├── graph_io.py
 │   └── graph.py
 └── tests/
+    ├── test_graph_io.py
     └── test_graph.py
 ```

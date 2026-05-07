@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "format_version": "0.1",
+    "name": "file_dependency",
+    "description": "Small file relationship graph for dependency path examples",
+    "directed": false
+  },
+  "nodes": [
+    {"id": "main.py"},
+    {"id": "src/graph.py"},
+    {"id": "src/graph_io.py"},
+    {"id": "tests/test_graph.py"},
+    {"id": "tests/test_graph_io.py"}
+  ],
+  "edges": [
+    {"source": "main.py", "target": "src/graph.py"},
+    {"source": "src/graph_io.py", "target": "src/graph.py"},
+    {"source": "tests/test_graph.py", "target": "src/graph.py"},
+    {"source": "tests/test_graph_io.py", "target": "src/graph_io.py"},
+    {"source": "tests/test_graph_io.py", "target": "src/graph.py"}
+  ],
+  "query": {
+    "start": "tests/test_graph_io.py",
+    "goal": "main.py",
+    "algorithm": "dfs_path"
+  },
+  "constraints": {
+    "allow_negative_weights": false
+  },
+  "expected_result": {
+    "path": ["tests/test_graph_io.py", "src/graph.py", "main.py"],
+    "cost": 2
+  }
+}
