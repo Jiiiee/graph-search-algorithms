@@ -6,16 +6,17 @@ graph-search-algorithms
 
 ## 2. 当前阶段状态
 
-- 当前阶段：v0.8-verification-oracle 冻结状态
+- 当前阶段：v0.9-dijkstra 冻结状态
 - 当前主分支：master
 - MVP v0.1 已完成
 - A* MVP 已完成
 - Heuristic 学习示例已完成
-- BFS / DFS / A* 算法对比文档已完成
+- BFS / DFS / Dijkstra / A* 算法对比文档已完成
 - A* path cost support 已完成
 - BFS / DFS path search variants 已完成
 - JSON graph data layer 已完成
 - NetworkX verification oracle 已完成
+- Dijkstra shortest path support 已完成
 - 当前工作区应为 clean
 
 ## 3. 已完成内容
@@ -120,6 +121,24 @@ graph-search-algorithms
 - NetworkX 仅作为测试期 oracle 使用，不进入 `src` 运行时逻辑
 - 未新增 CLI、可视化、benchmark、性能测试系统、图数据库、Hypothesis 或 hypothesis-networkx
 
+### v0.9-dijkstra
+
+- 新增 `dijkstra_with_cost(graph, start, goal)`，在不改变既有 BFS / DFS / A* 返回值和行为的前提下提供 Dijkstra 最低成本路径能力
+- 支持非负权重图中的最低总成本路径搜索，使用当前 `Graph` 的无向 weighted graph 数据结构
+- 找到路径时返回 `(path, total_cost)`
+- 支持 `start == goal` 时返回 `([start], 0)`
+- 支持无路径时返回 `([], float("inf"))`
+- 保持起点或终点不存在时抛出 `ValueError`
+- 负权重仍由 `Graph.add_edge` 的现有校验拒绝
+- 新增 Dijkstra 单元测试，覆盖最低成本路径、少边数但高成本路径不会被误选、零权重边、起终点相同、无路径、缺失节点和 zero-heuristic A* 成本一致性
+- 新增 NetworkX oracle 复验，使用 `networkx.shortest_path_length(..., weight="weight")` 复验 Dijkstra weighted shortest path cost
+- 保持 NetworkX 仅作为测试期 oracle 使用，不进入 `src` 运行时逻辑
+- 新增 `docs/DIJKSTRA.md`，记录 Dijkstra API、返回规则、权重规则、与 BFS / A* 的关系和当前边界
+- 更新 README，增加 Dijkstra 能力入口和示例
+- 更新 `docs/ALGORITHM_COMPARISON.md`，记录 BFS -> Dijkstra -> A* 的学习链条和算法对比
+- 更新 `docs/VERIFICATION_ORACLE.md`，记录 Dijkstra 的 NetworkX oracle 复验规则
+- 未新增 CLI、可视化、benchmark、性能测试系统、图数据库、Hypothesis 或 hypothesis-networkx
+
 ## 4. 已验证命令
 
 ```bash
@@ -133,6 +152,8 @@ python3 -m json.tool examples/graph_data/file_dependency.json >/dev/null
 conda run -n graph-env python -m pytest tests/test_against_networkx.py -q
 conda run -n graph-env python -m pytest -q
 git diff master...v0.8-verification-oracle -- src/graph.py
+conda run -n graph-env python -m pytest tests/test_graph.py tests/test_against_networkx.py -q
+conda run -n graph-env python -m pytest -q
 ```
 
 验证结果：
@@ -145,6 +166,8 @@ git diff master...v0.8-verification-oracle -- src/graph.py
 - `conda run -n graph-env python -m pytest tests/test_against_networkx.py -q` 通过全部 oracle 测试，结果为 6 passed
 - `conda run -n graph-env python -m pytest -q` 通过全部测试，当前结果为 48 passed
 - `git diff master...v0.8-verification-oracle -- src/graph.py` 无输出，确认 v0.8 未修改 `src/graph.py`
+- `conda run -n graph-env python -m pytest tests/test_graph.py tests/test_against_networkx.py -q` 通过 Dijkstra 相关定向测试，当前结果为 42 passed
+- `conda run -n graph-env python -m pytest -q` 通过全部测试，当前结果为 56 passed
 
 ## 5. Git / GitHub 状态
 
@@ -181,13 +204,17 @@ git diff master...v0.8-verification-oracle -- src/graph.py
 - tag 已创建：v0.8-verification-oracle
 - 本地 `v0.8-verification-oracle` 分支已删除
 - 远程 `v0.8-verification-oracle` 分支已删除
+- PR #10 已合并
+- tag 已创建：v0.9-dijkstra
+- 本地 `v0.9-dijkstra` 分支已删除
+- 远程 `v0.9-dijkstra` 分支已删除
 - 当前工作区应为 clean
 
 ## 6. 当前冻结点
 
-v0.8-verification-oracle 冻结在 weighted Graph、BFS、DFS、BFS / DFS path search variants、A*、A* path cost support、heuristic 学习示例、算法对比文档、JSON graph data layer、NetworkX test-time verification oracle、测试、命令行演示、README、`docs/HEURISTICS.md`、`docs/ALGORITHM_COMPARISON.md`、`docs/GRAPH_DATA_FORMAT.md` 和 `docs/VERIFICATION_ORACLE.md` 全部完成后的状态。
+v0.9-dijkstra 冻结在 weighted Graph、BFS、DFS、BFS / DFS path search variants、Dijkstra、A*、A* path cost support、heuristic 学习示例、算法对比文档、JSON graph data layer、NetworkX test-time verification oracle、Dijkstra 文档、测试、命令行演示、README、`docs/HEURISTICS.md`、`docs/DIJKSTRA.md`、`docs/ALGORITHM_COMPARISON.md`、`docs/GRAPH_DATA_FORMAT.md` 和 `docs/VERIFICATION_ORACLE.md` 全部完成后的状态。
 
-该冻结点适合作为后续扩展图搜索算法、有向图能力、更多 JSON 数据格式能力、更多 heuristic 示例、A* 教学统计、更多 oracle 覆盖、属性测试候选或项目结构完善的稳定起点。
+该冻结点适合作为后续扩展图搜索算法、有向图能力、更多 JSON 数据格式能力、更多 heuristic 示例、Dijkstra / A* 教学统计、更多 oracle 覆盖、属性测试候选或项目结构完善的稳定起点。
 
 ## 7. 后续任务候选
 
@@ -195,10 +222,11 @@ v0.8-verification-oracle 冻结在 weighted Graph、BFS、DFS、BFS / DFS path s
 - 扩展 JSON graph data format，例如支持坐标、标签、节点属性或边属性
 - 为 JSON graph data layer 增加更详细的错误信息或格式版本演进策略
 - 增加更多 example graph data，用于算法教学和回归测试
+- 增加 Dijkstra 专用 JSON 示例或更多带权路径教学数据
+- 为 Dijkstra 和 A* 增加访问节点数量或扩展顺序统计，用于教学对比
 - 为 A* 增加访问节点数量或扩展顺序统计，用于教学对比
-- 增加 Dijkstra 算法
 - 增加更多 heuristic 示例，例如 Chebyshev distance 或自定义业务成本估计
-- 增加更多边界测试，例如重复边权重更新、非连通图、零权重边、孤立节点、空图
+- 增加更多边界测试，例如重复边权重更新、非连通图、孤立节点、空图
 - 扩展 NetworkX oracle 覆盖更多图形和边界场景
 - 后续再评估 Hypothesis / hypothesis-networkx 作为生成式图测试工具
 - 增加简单图可视化功能
@@ -206,20 +234,21 @@ v0.8-verification-oracle 冻结在 weighted Graph、BFS、DFS、BFS / DFS path s
 
 ## 8. 下次恢复项目的建议起点
 
-建议下次从 v0.8-verification-oracle 冻结状态开始，先确认是否继续扩展算法能力、JSON 数据格式能力、有向图能力、A* 教学统计、heuristic 示例、oracle 覆盖或属性测试能力，而不是直接修改代码。
+建议下次从 v0.9-dijkstra 冻结状态开始，先确认是否继续扩展算法能力、JSON 数据格式能力、有向图能力、Dijkstra / A* 教学统计、heuristic 示例、oracle 覆盖或属性测试能力，而不是直接修改代码。
 
 推荐恢复顺序：
 
 1. 确认当前分支是 `master`
 2. 确认工作区 clean
-3. 查看 tag `v0.8-verification-oracle`
+3. 查看 tag `v0.9-dijkstra`
 4. 阅读当前状态文档
 5. 阅读 `docs/GRAPH_DATA_FORMAT.md`，确认 JSON v0.1 的当前边界
 6. 阅读 `docs/VERIFICATION_ORACLE.md`，确认 test-time oracle 的当前边界
-7. 选择下一阶段目标，并单独制定开发计划
+7. 阅读 `docs/DIJKSTRA.md` 和 `docs/ALGORITHM_COMPARISON.md`，确认 BFS -> Dijkstra -> A* 学习链条
+8. 选择下一阶段目标，并单独制定开发计划
 
 ## 9. 暂停说明
 
-项目已在 v0.8-verification-oracle 阶段暂停。
+项目已在 v0.9-dijkstra 阶段暂停。
 
 暂停时不需要继续修改代码、不需要提交新的 commit、不需要推送远程分支。后续恢复时，应先基于当前冻结状态确认目标，再开启新的计划和实现步骤。
