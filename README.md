@@ -10,14 +10,17 @@ structures and search algorithms through an incremental Codex APP workflow.
 - Depth-first search (`dfs`)
 - BFS path search (`bfs_path`)
 - DFS path search (`dfs_path`)
+- Dijkstra lowest-cost path search (`dijkstra_with_cost`)
 - A* search (`astar`)
 - A* search with path cost (`astar_with_cost`)
 - Focused tests for graph behavior and traversal order
 
 The implementation intentionally keeps the API small and readable. Edges are
 undirected, default to weight `1`, and reject negative weights. BFS and DFS can
-return traversal order or a path to a goal. A* can return either a path list or
-a `(path, cost)` pair, and uses a caller-provided heuristic function.
+return traversal order or a path to a goal. Dijkstra returns the lowest-cost
+path and total cost for non-negative weighted graphs. A* can return either a
+path list or a `(path, cost)` pair, and uses a caller-provided heuristic
+function.
 
 ## Path search
 
@@ -28,6 +31,34 @@ path from `start` to `goal`.
 - `bfs_path` returns a shortest path by edge count.
 - `dfs_path` returns the first path found using the current DFS neighbor order.
 - Both return `[start]` when `start == goal`, and `[]` when no path exists.
+
+## Dijkstra
+
+`dijkstra_with_cost(graph, start, goal)` returns the lowest-cost path for the
+current undirected weighted `Graph`.
+
+```python
+from src.graph import Graph, dijkstra_with_cost
+
+graph = Graph()
+graph.add_edge("A", "B", 2)
+graph.add_edge("B", "D", 3)
+graph.add_edge("A", "D", 10)
+
+path, cost = dijkstra_with_cost(graph, "A", "D")
+
+print(path)
+print(cost)
+```
+
+Expected output:
+
+```text
+['A', 'B', 'D']
+5
+```
+
+When no path exists, `dijkstra_with_cost` returns `([], float("inf"))`.
 
 ## Heuristics
 
@@ -43,7 +74,10 @@ to estimate the remaining cost from each node to the goal.
 
 See `docs/HEURISTICS.md` for a short learning guide.
 
-See `docs/ALGORITHM_COMPARISON.md` for a comparison of BFS, DFS, and A*.
+See `docs/ALGORITHM_COMPARISON.md` for a comparison of BFS, DFS, Dijkstra,
+and A*.
+
+See `docs/DIJKSTRA.md` for a focused Dijkstra learning guide.
 
 See `docs/GRAPH_DATA_FORMAT.md` for the JSON graph data format and examples.
 

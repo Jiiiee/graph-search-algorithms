@@ -1,7 +1,16 @@
 import pytest
 
 from main import euclidean_distance, manhattan_distance, zero_heuristic
-from src.graph import Graph, astar, astar_with_cost, bfs, bfs_path, dfs, dfs_path
+from src.graph import (
+    Graph,
+    astar,
+    astar_with_cost,
+    bfs,
+    bfs_path,
+    dfs,
+    dfs_path,
+    dijkstra_with_cost,
+)
 
 
 def build_sample_graph() -> Graph:
@@ -259,3 +268,70 @@ def test_astar_with_cost_raises_for_missing_start_or_goal_node() -> None:
 
     with pytest.raises(ValueError, match="Start node does not exist"):
         astar_with_cost(graph, "A", "Z", zero_heuristic)
+
+
+def test_dijkstra_with_cost_returns_lowest_total_cost_path() -> None:
+    graph = Graph()
+    graph.add_edge("A", "B", 2)
+    graph.add_edge("B", "D", 3)
+    graph.add_edge("A", "C", 1)
+    graph.add_edge("C", "D", 8)
+    graph.add_edge("A", "D", 10)
+
+    assert dijkstra_with_cost(graph, "A", "D") == (["A", "B", "D"], 5)
+
+
+def test_dijkstra_with_cost_prefers_lower_cost_over_fewer_edges() -> None:
+    graph = Graph()
+    graph.add_edge("A", "B", 1)
+    graph.add_edge("B", "C", 1)
+    graph.add_edge("C", "D", 1)
+    graph.add_edge("A", "D", 10)
+
+    assert dijkstra_with_cost(graph, "A", "D") == (["A", "B", "C", "D"], 3)
+    assert bfs_path(graph, "A", "D") == ["A", "D"]
+
+
+def test_dijkstra_with_cost_supports_zero_weight_edges() -> None:
+    graph = Graph()
+    graph.add_edge("A", "B", 0)
+    graph.add_edge("B", "D", 2)
+    graph.add_edge("A", "D", 5)
+
+    assert dijkstra_with_cost(graph, "A", "D") == (["A", "B", "D"], 2)
+
+
+def test_dijkstra_with_cost_returns_zero_cost_when_start_is_goal() -> None:
+    graph = build_sample_graph()
+
+    assert dijkstra_with_cost(graph, "A", "A") == (["A"], 0)
+
+
+def test_dijkstra_with_cost_returns_infinite_cost_when_goal_is_unreachable() -> None:
+    graph = build_sample_graph()
+    graph.add_node("Z")
+
+    assert dijkstra_with_cost(graph, "A", "Z") == ([], float("inf"))
+
+
+def test_dijkstra_with_cost_raises_for_missing_start_or_goal_node() -> None:
+    graph = build_sample_graph()
+
+    with pytest.raises(ValueError, match="Start node does not exist"):
+        dijkstra_with_cost(graph, "Z", "A")
+
+    with pytest.raises(ValueError, match="Start node does not exist"):
+        dijkstra_with_cost(graph, "A", "Z")
+
+
+def test_dijkstra_with_cost_matches_zero_heuristic_astar_cost() -> None:
+    graph = Graph()
+    graph.add_edge("A", "B", 2)
+    graph.add_edge("B", "D", 3)
+    graph.add_edge("A", "D", 10)
+
+    dijkstra_path, dijkstra_cost = dijkstra_with_cost(graph, "A", "D")
+    astar_path, astar_cost = astar_with_cost(graph, "A", "D", zero_heuristic)
+
+    assert dijkstra_path == astar_path
+    assert dijkstra_cost == astar_cost

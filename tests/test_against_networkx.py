@@ -5,7 +5,7 @@ import networkx as nx
 import pytest
 
 from main import zero_heuristic
-from src.graph import Graph, astar_with_cost, bfs_path
+from src.graph import Graph, astar_with_cost, bfs_path, dijkstra_with_cost
 from src.graph_io import load_graph_from_json
 
 
@@ -94,6 +94,35 @@ def test_bfs_path_matches_networkx_shortest_path_edge_count() -> None:
     assert len(path) - 1 == oracle_edge_count
 
 
+def test_dijkstra_with_cost_matches_networkx_weighted_shortest_path() -> None:
+    graph = Graph()
+    graph.add_edge("A", "B", 2)
+    graph.add_edge("B", "D", 3)
+    graph.add_edge("A", "C", 1)
+    graph.add_edge("C", "D", 8)
+    graph.add_edge("A", "D", 10)
+    oracle_graph = to_networkx_graph(graph)
+
+    path, cost = dijkstra_with_cost(graph, "A", "D")
+    oracle_path = nx.shortest_path(
+        oracle_graph,
+        "A",
+        "D",
+        weight="weight",
+    )
+    oracle_cost = nx.shortest_path_length(
+        oracle_graph,
+        "A",
+        "D",
+        weight="weight",
+    )
+
+    assert_valid_path(graph, path, "A", "D")
+    assert_valid_path(graph, oracle_path, "A", "D")
+    assert cost == oracle_cost
+    assert path_cost(graph, path) == oracle_cost
+
+
 def test_no_path_results_match_networkx_no_path() -> None:
     graph = Graph()
     graph.add_edge("A", "B", 2)
@@ -102,6 +131,7 @@ def test_no_path_results_match_networkx_no_path() -> None:
 
     assert bfs_path(graph, "A", "Z") == []
     assert astar_with_cost(graph, "A", "Z", zero_heuristic) == ([], float("inf"))
+    assert dijkstra_with_cost(graph, "A", "Z") == ([], float("inf"))
     with pytest.raises(nx.NetworkXNoPath):
         nx.shortest_path(oracle_graph, "A", "Z")
     with pytest.raises(nx.NetworkXNoPath):
@@ -126,7 +156,7 @@ def test_example_graph_data_paths_are_valid_against_networkx(file_name: str) -> 
     algorithm = data.query.get("algorithm")
 
     if algorithm == "astar":
-        path, cost = astar_with_cost(graph, start, goal, zero_heuristic)
+        path, cost = dijkstra_with_cost(graph, start, goal)
         oracle_path = nx.shortest_path(
             oracle_graph,
             start,
@@ -145,6 +175,15 @@ def test_example_graph_data_paths_are_valid_against_networkx(file_name: str) -> 
         assert cost == oracle_cost
         assert path_cost(graph, path) == oracle_cost
         assert expected_result.get("cost") == oracle_cost
+
+        astar_path, astar_cost = astar_with_cost(
+            graph,
+            start,
+            goal,
+            zero_heuristic,
+        )
+        assert_valid_path(graph, astar_path, start, goal)
+        assert astar_cost == oracle_cost
         return
 
     if algorithm == "bfs_path":

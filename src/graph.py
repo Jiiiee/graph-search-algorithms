@@ -141,6 +141,48 @@ def dfs_path(graph: Graph, start: Hashable, goal: Hashable) -> list[Hashable]:
     return []
 
 
+def dijkstra_with_cost(
+    graph: Graph,
+    start: Hashable,
+    goal: Hashable,
+) -> tuple[list[Hashable], float]:
+    """Return the lowest-cost path and total cost using Dijkstra's algorithm."""
+
+    graph._ensure_node_exists(start)
+    graph._ensure_node_exists(goal)
+
+    if start == goal:
+        return [start], 0
+
+    counter = 0
+    open_set = [(0.0, counter, start)]
+    came_from: dict[Hashable, Hashable] = {}
+    distance = {start: 0.0}
+    closed = set()
+
+    while open_set:
+        current_distance, _, current = heapq.heappop(open_set)
+        if current in closed:
+            continue
+
+        if current == goal:
+            return _reconstruct_path(came_from, current), current_distance
+
+        closed.add(current)
+
+        for neighbor in graph.neighbors(current):
+            tentative_distance = current_distance + graph.edge_weight(current, neighbor)
+            if tentative_distance >= distance.get(neighbor, float("inf")):
+                continue
+
+            came_from[neighbor] = current
+            distance[neighbor] = tentative_distance
+            counter += 1
+            heapq.heappush(open_set, (tentative_distance, counter, neighbor))
+
+    return [], float("inf")
+
+
 def astar(
     graph: Graph,
     start: Hashable,
